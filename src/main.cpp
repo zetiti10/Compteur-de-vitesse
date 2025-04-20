@@ -15,9 +15,9 @@
 #include "battery.hpp"
 
 // Instanciation des objets.
-Display display(0x3C, 5000);
+Display display(0x3C, 10000);
 GPSModule gps(Serial1, 9600, display);
-Battery battery(A0, 2500, 74, display);
+Battery battery(A0, 250, 74, display);
 
 // Initialisation du programme.
 void setup()
@@ -28,11 +28,12 @@ void setup()
     gps.begin();
     battery.begin();
     pinMode(6, INPUT_PULLUP);
+    Serial.begin(115200);
 
     // Démarrage
     battery.startupCheck();
     display.displayStartupMessage();
-    display.displayAutonomy(battery.getPercentage(), battery.getRemainingAutonomyHours(), battery.getRemainingAutonomyMinutes());
+    //display.displayAutonomy(battery.getPercentage(), battery.getRemainingAutonomyHours(), battery.getRemainingAutonomyMinutes());
 }
 
 // Boucle d'exécution principale.
@@ -49,9 +50,8 @@ void loop()
         while(digitalRead(6) == LOW)
             delay(1);
 
-        delay(10); // TODO PEUT-être faire un meilleur système avec une lib ?
+        delay(10); // TODO Peut-être faire un meilleur système ?
     }
 }
 
-// TODO Vérifier toutes les présentations de code et les commentaires dans le code source. Vérifier que tout est bien commenté et que tout est bien écrit. Vérifier que tout est bien formaté. Vérifier que tout est bien indenté. Vérifier que tout est bien espacé. Vérifier que tout est bien aligné. Vérifier que tout est bien organisé. Vérifier que tout est bien structuré. Vérifier que tout est bien lisible. Vérifier que tout est bien compréhensible. Vérifier que tout est bien clair. Vérifier que tout est bien concis. Vérifier que tout est bien précis.
-// TODO Bien unifier l'organisation du code, avec les commentaires, les noms...
+// TODO Bien unifier et vérifier l'organisation du code, avec les commentaires (doxygen), les noms...

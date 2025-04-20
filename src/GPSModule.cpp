@@ -23,6 +23,9 @@ void GPSModule::loop()
 {
     this->decodeData();
 
+    if (!this->isReady())
+        return;
+
     if (m_GPSDecoder.speed.isUpdated() || m_GPSDecoder.time.isUpdated())
     {
         m_display.dataUpdated();
@@ -64,9 +67,6 @@ unsigned int GPSModule::getHour()
     this->decodeData();
 
     unsigned int offset = 1;
-    // En France métropolitaine :
-    // Passage de l'heure d'hiver à l'heure d'été le dernier dimanche de mars à 1h00 UTC (à 2h00 locales il est 3h00)
-    // Passage de l'heure d'été à l'heure d'hiver le dernier dimanche d'octobre à 1h00 UTC (à 3h00 locales il est 2h00) TODO Enlever après vérifications !
     unsigned int year = m_GPSDecoder.date.year();
     unsigned int month = m_GPSDecoder.date.month();
     unsigned int day = m_GPSDecoder.date.day();

@@ -36,7 +36,7 @@ void Display::begin()
 
 void Display::loop()
 {
-    if (m_currentMenu == DRIVING_MENU || m_currentMenu == BATTERY_MENU || m_currentMenu == AUTONOMY_MESSAGE)
+    if (m_currentMenu == DRIVING_MENU || m_currentMenu == BATTERY_MENU)
     {
         if ((millis() - m_menuTimer) >= m_messageShowTime)
         {
@@ -51,7 +51,7 @@ void Display::loop()
     {
         if ((millis() - m_lastSpeedRecord) <= 2000)
         {
-            unsigned int speed = 100;
+            unsigned int speed = 500;
             if ((millis() % speed) < (speed / 2))
                 m_display.drawBitmap(13, 21, image_speed_record_bits, 109, 37, 1);
 
@@ -59,18 +59,18 @@ void Display::loop()
                 m_display.drawBitmap(13, 21, image_speed_record_bits, 109, 37, 0);
         }
 
-        unsigned int speed = 500;
-        m_display.setTextColor(1);
+        unsigned int speed = 1000;
         m_display.setTextColor(1);
         m_display.setTextWrap(false);
         m_display.setFont(&FreeSans9pt7b);
         m_display.setCursor(62, 12);
-        if ((millis() % speed) < (speed / 2)) // TODO Peut-être pas très optimisé !
+        if ((millis() % speed) < (speed / 2)) // TODO Refaire un système plus optimisé qui n'écrit sur l'écran que lorsque c'est nécessaire !
             m_display.setTextColor(1);
 
         else
             m_display.setTextColor(0);
         m_display.print(":");
+        m_display.display();
     }
 }
 
@@ -89,8 +89,7 @@ void Display::displayStartupMessage()
 
     delay(3000);
 
-    m_display.clearDisplay();
-    m_display.display();
+    this->dataUpdated();
 }
 
 void Display::displayNextMenu()
@@ -123,6 +122,7 @@ void Display::displayNextMenu()
         m_display.print(hours);
         m_display.print(F("h et "));
         m_display.print(minutes);
+        m_display.print(F("min"));
 
         m_display.drawBitmap(0, 39, image_clock_bits, 15, 16, 1);
         m_display.drawBitmap(0, 20, image_wind_bits, 15, 16, 1);
@@ -149,7 +149,7 @@ void Display::displayNextMenu()
         m_display.drawRect(13, -1, 103, 16, 1);
 
         m_display.setCursor(18, 34);
-        m_display.print(m_battery->getPercentage() * 100.0f);
+        m_display.print(int(m_battery->getPercentage() * 100.0f));
         m_display.print(F(" %"));
 
         m_display.setCursor(18, 52);
@@ -196,26 +196,34 @@ void Display::dataUpdated()
 
     if (!m_connected)
     {
-        m_display.clearDisplay();
+        if (m_GPSModule->isReady())
+        {
+            m_connected = true;
+        }
 
-        m_display.setTextColor(1);
-        m_display.setTextWrap(false);
-        m_display.setFont(&FreeSans9pt7b);
-        m_display.setCursor(21, 45);
-        m_display.print("Connexion");
+        else
+        {
+            m_display.clearDisplay();
 
-        m_display.setFont();
-        m_display.setCursor(11, 50);
-        m_display.print("aux satellites GPS");
+            m_display.setTextColor(1);
+            m_display.setTextWrap(false);
+            m_display.setFont(&FreeSans9pt7b);
+            m_display.setCursor(21, 45);
+            m_display.print("Connexion");
 
-        m_display.drawBitmap(104, 0, this->batteryIconChooser(m_battery->getPercentage()), 24, 16, 1);
-        m_display.drawBitmap(52, 4, image_big_timer_bits, 24, 24, 1);
-        m_display.drawBitmap(124, 29, image_next_menu_bits, 4, 7, 1);
-        m_display.drawBitmap(0, 0, image_no_connection_bits, 15, 16, 1); // TODO Faire un système de perte de connexion ?
+            m_display.setFont();
+            m_display.setCursor(11, 50);
+            m_display.print("aux satellites GPS");
 
-        m_display.display();
+            m_display.drawBitmap(104, 0, this->batteryIconChooser(m_battery->getPercentage()), 24, 16, 1);
+            m_display.drawBitmap(52, 4, image_big_timer_bits, 24, 24, 1);
+            m_display.drawBitmap(124, 29, image_next_menu_bits, 4, 7, 1);
+            m_display.drawBitmap(0, 0, image_no_connection_bits, 15, 16, 1); // TODO Faire un système de perte de connexion ?
 
-        return;
+            m_display.display();
+
+            return;
+        }
     }
 
     m_display.clearDisplay();
@@ -245,7 +253,7 @@ void Display::dataUpdated()
     m_display.display();
 }
 
-void Display::displayAutonomy(float percentage, unsigned int hour, unsigned int minutes)
+/*void Display::displayAutonomy(float percentage, unsigned int hour, unsigned int minutes)
 {
     m_display.clearDisplay();
 
@@ -268,7 +276,7 @@ void Display::displayAutonomy(float percentage, unsigned int hour, unsigned int 
 
     m_currentMenu = AUTONOMY_MESSAGE;
     m_menuTimer = millis();
-}
+}*/
 
 void Display::displayLowBatteryMessage(float percentage, unsigned int minutes)
 {

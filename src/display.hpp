@@ -10,7 +10,6 @@ enum Menu {
     MAIN_MENU,
     DRIVING_MENU,
     BATTERY_MENU,
-    AUTONOMY_MESSAGE,
     LOW_BATTERY_MESSAGE,
 };
 
@@ -26,7 +25,7 @@ public:
     virtual void displayStartupMessage();
     virtual void displayNextMenu();
     virtual void dataUpdated();
-    virtual void displayAutonomy(float percentage, unsigned int hour, unsigned int minutes);
+    //virtual void displayAutonomy(float percentage, unsigned int hour, unsigned int minutes);
     virtual void displayLowBatteryMessage(float percentage, unsigned int minutes);
     virtual void displayEmptyBatteryMessage();
     virtual void triggerSpeedRecord();

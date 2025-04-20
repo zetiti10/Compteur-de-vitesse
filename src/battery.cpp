@@ -11,6 +11,7 @@
 
 // Autres fichiers du programme
 #include "battery.hpp"
+#include "utils.hpp"
 
 Battery::Battery(unsigned int voltagePin, unsigned int capacity, unsigned int current, Display &display) : m_voltagePin(voltagePin), m_capacity(capacity), m_current(current), m_display(display), m_lowBatteryMessageDisplayed(false), m_lastCheck(0) {}
 
@@ -37,8 +38,8 @@ void Battery::loopCheck()
 
         float percentage = this->getPercentage();
 
-        if (percentage <= 0.05f) // TODO Peut-être mettre une revérification du pourcentage ?
-            this->shutdown(); // TODO Peut-être mettre une autre valeur pour la batterie vide ? Peut-être zéro et ajouteur un paramètre au constructeur de valeur de batterie vide ?
+        if (percentage <= 0.00f)
+            this->shutdown();
 
         if (!m_lowBatteryMessageDisplayed && this->getRemainingAutonomyHours() == 0 && this->getRemainingAutonomyMinutes() <= 30)
         {
@@ -49,10 +50,13 @@ void Battery::loopCheck()
 }
 
 // TODO Faire un meilleur système car la décharge n'est pas linéaire !
+// TODO Pourquoi ne pas enlever les deux décimales qui ne sont pas significatives ?
+// TODO Peut-être faire un système de pourcentage plus stable, basé sur une ensemble de valeurs pour éviter la chute de tension occasionnelle ?
+// TODO Quelles bornes mettre ? 3V et 4.2V ou une plage plus réduite pour limiter ne pas trop abimer la batterie ?
 const float Battery::getPercentage()
 {
     float voltage = (float(analogRead(m_voltagePin)) / 1024.0f) * 5.0f;
-    float percentage = map(voltage, 3.0f, 4.2f, 0.0f, 1.0f);
+    float percentage = mapFloat(voltage, 3.0f, 4.2f, 0.0f, 1.0f);
     return percentage;
 }
 
