@@ -6,7 +6,8 @@
 class Battery;
 class GPSModule;
 
-enum Menu {
+enum Menu
+{
     MAIN_MENU,
     DRIVING_MENU,
     BATTERY_MENU,
@@ -25,14 +26,12 @@ public:
     virtual void displayStartupMessage();
     virtual void displayNextMenu();
     virtual void dataUpdated();
-    //virtual void displayAutonomy(float percentage, unsigned int hour, unsigned int minutes);
-    virtual void displayLowBatteryMessage(float percentage, unsigned int minutes);
+    virtual void displayLowBatteryMessage();
     virtual void displayEmptyBatteryMessage();
-    virtual void triggerSpeedRecord();
-
 
 protected:
-    virtual const unsigned char *batteryIconChooser(float percentage) const;
+    virtual const unsigned char *batteryIconChooser() const;
+    virtual void displayTimeSeparator(bool state);
 
     Adafruit_SSD1306 m_display;
     const unsigned int m_address;
@@ -42,7 +41,7 @@ protected:
     const unsigned int m_messageShowTime;
     unsigned long m_menuTimer;
     bool m_connected;
-    unsigned long m_lastSpeedRecord;
+    bool m_timeSeparatorPhase;
 };
 
 #endif

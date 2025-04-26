@@ -4,6 +4,6 @@
 #include <Arduino.h>
 
 String addZeros(int number, int length);
-float mapFloat(float x, float in_min, float in_max, float out_min, float out_max);
+float mapFloat(float x, float  inMin, float inMax, float outMin, float outMax);
 
 #endif

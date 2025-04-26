@@ -33,25 +33,24 @@ void setup()
     // Démarrage
     battery.startupCheck();
     display.displayStartupMessage();
-    //display.displayAutonomy(battery.getPercentage(), battery.getRemainingAutonomyHours(), battery.getRemainingAutonomyMinutes());
 }
 
 // Boucle d'exécution principale.
 void loop()
 {
+    // Exécution des tâches de chaque composant.
     gps.loop();
     battery.loopCheck();
     display.loop();
 
+    // Gestion du bouton.
     if (digitalRead(6) == LOW)
     {
         display.displayNextMenu();
-        
-        while(digitalRead(6) == LOW)
+
+        while (digitalRead(6) == LOW)
             delay(1);
 
-        delay(10); // TODO Peut-être faire un meilleur système ?
+        delay(10);
     }
 }
-
-// TODO Bien unifier et vérifier l'organisation du code, avec les commentaires (doxygen), les noms...

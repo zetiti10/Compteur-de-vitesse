@@ -1,9 +1,10 @@
 #ifndef BATTERY_DEFINITIONS
 #define BATTERY_DEFINITIONS
 
-#include <Adafruit_SSD1306.h>
-
 #include "display.hpp"
+#include "GPSModule.hpp"
+
+#define BATTERY_BUFFER_SIZE 10
 
 class Battery
 {
@@ -22,6 +23,7 @@ public:
 
 protected:
     virtual void shutdown();
+    float calculateAverageVoltage();
 
     const unsigned int m_voltagePin;
     const unsigned int m_capacity;
@@ -29,6 +31,9 @@ protected:
     Display &m_display;
     bool m_lowBatteryMessageDisplayed;
     unsigned long m_lastCheck;
+    float m_voltageBuffer[BATTERY_BUFFER_SIZE];
+    unsigned int m_bufferIndex;
+    unsigned int m_bufferCount;
 };
 
 #endif
