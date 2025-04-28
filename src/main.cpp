@@ -17,7 +17,7 @@
 // Instanciation des objets.
 Display display(0x3C, 10000);
 GPSModule gps(Serial1, 9600, display);
-Battery battery(A0, 250, 74, display);
+Battery battery(A0, 1000, 160, display);
 
 // Initialisation du programme.
 void setup()

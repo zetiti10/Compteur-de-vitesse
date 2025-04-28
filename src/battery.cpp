@@ -8,6 +8,7 @@
 
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
+#include <EEPROM.h>
 
 // Autres fichiers du programme
 #include "battery.hpp"
@@ -20,12 +21,31 @@ Battery::Battery(unsigned int voltagePin, unsigned int capacity, unsigned int cu
 {
     for (int i = 0; i < BATTERY_BUFFER_SIZE; i++)
         m_voltageBuffer[i] = 3.7f;
+
+#ifdef MEASURE_BATTERY
+    m_lastValueRegistered = 0;
+    m_recording = false;
+#endif
 }
 
 /// @brief Initialise l'objet.
 void Battery::begin()
 {
     pinMode(m_voltagePin, INPUT);
+
+    // Mise en place de la communication dans le cas de la mesure de la batterie.
+#ifdef MEASURE_BATTERY
+    Serial.begin(115200);
+    pinMode(13, OUTPUT);
+
+    if (EEPROM.read(2) == 0)
+    {
+        digitalWrite(13, HIGH);
+        m_recording = true;
+        delay(500);
+        digitalWrite(13, LOW);
+    }
+#endif
 }
 
 /// @brief Vérifie que la batterie n'est pas déchargée.
@@ -59,18 +79,67 @@ void Battery::loopCheck()
             m_lowBatteryMessageDisplayed = true;
         }
     }
+
+    // Mesure de la batterie.
+#ifdef MEASURE_BATTERY
+    // Envoi des données à la connexion à un ordinateur.
+    if (Serial.available())
+    {
+        digitalWrite(13, HIGH);
+        delay(1000);
+        for (int i = 0; i < 255; i++)
+        {
+            // Arrêt de l'envoi lorsque toutes les données ont été envoyées.
+            unsigned int value = EEPROM.read(i);
+            if (value == 0 && i > 12)
+                break;
+
+            // Retour à un float puis envoi de la tension.
+            float voltage = float(value) / 10.0f;
+            int time = i * MEASURE_INTERVAL;
+            Serial.print(time);
+            Serial.print(F(","));
+            Serial.println(voltage, 1);
+        }
+
+        // Réinitialisation de l'EEPROM une fois la lecture faite.
+        for (int i = 0; i < 255; i++)
+            EEPROM.update(i, 0);
+        digitalWrite(13, LOW);
+        
+        while(true)
+            delay(1);
+    }
+
+    if (!m_recording)
+        return;
+
+    unsigned int currentValue = int(millis() / (1000UL * MEASURE_INTERVAL));
+    if(currentValue > m_lastValueRegistered)
+    {
+        m_lastValueRegistered = currentValue;
+
+        if (currentValue >= 255)
+            return;
+
+        digitalWrite(13, HIGH);
+        unsigned int voltage = int(this->calculateAverageVoltage() * 10.0f);
+        EEPROM.update(currentValue, voltage);
+        delay(100);
+        digitalWrite(13, LOW);
+    }
+#endif
 }
 
 // Valeurs permettant d'estimer le pourcentage de batterie restante à partir de la tension mesurée.
 const float voltageLevels[] = {
-    3.0f, 3.2f, 3.3f, 3.4f, 3.45f, 3.5f, 3.55f, 3.6f,
-    3.65f, 3.7f, 3.71f, 3.72f, 3.75f, 3.8f, 3.85f, 3.9f,
-    3.95f, 4.0f, 4.05f, 4.1f};
+    3.20f, 3.24f, 3.28f, 3.33f, 3.37f, 3.41f, 3.45f, 3.49f, 3.54f, 3.58f, 3.62f, 3.66f, 3.71f, 3.75f, 3.79f, 3.83f, 3.87f, 3.92f, 3.96f, 4.00f
+};
 const float chargePercentages[] = {
-    0.0f, 0.01f, 0.02f, 0.03f, 0.05f, 0.07f, 0.1f, 0.15f,
-    0.2f, 0.25f, 0.3f, 0.35f, 0.4f, 0.5f, 0.6f, 0.7f,
-    0.8f, 0.9f, 0.95f, 1.0f};
+    0.00f, 0.05f, 0.11f, 0.16f, 0.21f, 0.26f, 0.32f, 0.37f, 0.42f, 0.47f, 0.53f, 0.58f, 0.63f, 0.68f, 0.74f, 0.79f, 0.84f, 0.89f, 0.95f, 1.00f
+};
 const int numberOfVoltageValues = 20;
+
 
 /// @brief Permet de calculer le pourcentage de batterie restante basé sur un ensemble de mesures de la tension de la batterie.
 /// @return L'estimation du pourcentage de batterie restante.

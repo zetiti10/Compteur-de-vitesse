@@ -57,7 +57,7 @@ void Display::loop()
     // Animation du ":" de l'heure.
     if (m_currentMenu == MAIN_MENU && m_connected)
     {
-        unsigned int speed = 1000;
+        unsigned int speed = 2000;
         bool shouldBlink = (millis() % speed) < (speed / 2);
 
         if (shouldBlink != m_timeSeparatorPhase)
@@ -76,7 +76,7 @@ void Display::displayStartupMessage()
     m_display.setTextWrap(false);
     m_display.setFont(&FreeSans9pt7b);
     m_display.setCursor(3, 15);
-    m_display.print("Compteur GPS");
+    m_display.print(F("Compteur GPS"));
 
     m_display.drawBitmap(30, 25, image_speed_meter_bits, 68, 39, 1);
 
@@ -104,7 +104,7 @@ void Display::displayNextMenu()
         m_display.setTextWrap(false);
         m_display.setFont(&FreeSans9pt7b);
         m_display.setCursor(28, 12);
-        m_display.print("Conduite");
+        m_display.print(F("Conduite"));
 
         m_display.setCursor(18, 34);
         m_display.print(m_GPSModule->getMaxSpeed());
@@ -140,7 +140,7 @@ void Display::displayNextMenu()
         m_display.setTextWrap(false);
         m_display.setFont(&FreeSans9pt7b);
         m_display.setCursor(15, 12);
-        m_display.print("Alimentation");
+        m_display.print(F("Alimentation"));
 
         m_display.drawRect(13, -1, 103, 16, 1);
 
@@ -206,11 +206,11 @@ void Display::dataUpdated()
             m_display.setTextWrap(false);
             m_display.setFont(&FreeSans9pt7b);
             m_display.setCursor(21, 45);
-            m_display.print("Connexion");
+            m_display.print(F("Connexion"));
 
             m_display.setFont();
             m_display.setCursor(11, 50);
-            m_display.print("aux satellites GPS");
+            m_display.print(F("aux satellites GPS"));
 
             m_display.drawBitmap(104, 0, this->batteryIconChooser(), 24, 16, 1);
             m_display.drawBitmap(52, 4, image_big_timer_bits, 24, 24, 1);
@@ -278,7 +278,7 @@ void Display::displayLowBatteryMessage()
     m_display.setTextWrap(false);
     m_display.setFont(&FreeSans9pt7b);
     m_display.setCursor(9, 38);
-    m_display.print("Batterie faible");
+    m_display.print(F("Batterie faible"));
 
     m_display.setCursor(0, 55);
     m_display.print(minutes);
@@ -301,10 +301,10 @@ void Display::displayEmptyBatteryMessage()
     m_display.setTextWrap(false);
     m_display.setFont(&FreeSans9pt7b);
     m_display.setCursor(33, 38);
-    m_display.print("Batterie");
+    m_display.print(F("Batterie"));
 
     m_display.setCursor(22, 54);
-    m_display.print("dechargee");
+    m_display.print(F("dechargee"));
     delay(m_messageShowTime);
 
     m_display.clearDisplay();
@@ -344,6 +344,6 @@ void Display::displayTimeSeparator(bool state)
     m_display.setFont(&FreeSans9pt7b);
     m_display.setCursor(62, 12);
     m_display.setTextColor(state ? 1 : 0);
-    m_display.print(":");
+    m_display.print(F(":"));
     m_display.display();
 }
