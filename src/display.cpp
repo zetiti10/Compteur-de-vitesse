@@ -252,7 +252,7 @@ void Display::dataUpdated()
         m_display.setCursor(48, 56);
         m_display.print(F("--"));
     }
-    
+
     m_display.drawBitmap(104, 0, this->batteryIconChooser(), 24, 16, 1);
     m_display.drawBitmap(0, 0, image_connected_bits, 15, 16, 1);
     m_display.drawBitmap(124, 29, image_next_menu_bits, 4, 7, 1);

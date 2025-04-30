@@ -106,8 +106,8 @@ void Battery::loopCheck()
         for (int i = 0; i < 255; i++)
             EEPROM.update(i, 0);
         digitalWrite(13, LOW);
-        
-        while(true)
+
+        while (true)
             delay(1);
     }
 
@@ -115,7 +115,7 @@ void Battery::loopCheck()
         return;
 
     unsigned int currentValue = int(millis() / (1000UL * MEASURE_INTERVAL));
-    if(currentValue > m_lastValueRegistered)
+    if (currentValue > m_lastValueRegistered)
     {
         m_lastValueRegistered = currentValue;
 
@@ -133,13 +133,10 @@ void Battery::loopCheck()
 
 // Valeurs permettant d'estimer le pourcentage de batterie restante à partir de la tension mesurée.
 const float voltageLevels[] = {
-    3.20f, 3.24f, 3.28f, 3.33f, 3.37f, 3.41f, 3.45f, 3.49f, 3.54f, 3.58f, 3.62f, 3.66f, 3.71f, 3.75f, 3.79f, 3.83f, 3.87f, 3.92f, 3.96f, 4.00f
-};
+    3.20f, 3.24f, 3.28f, 3.33f, 3.37f, 3.41f, 3.45f, 3.49f, 3.54f, 3.58f, 3.62f, 3.66f, 3.71f, 3.75f, 3.79f, 3.83f, 3.87f, 3.92f, 3.96f, 4.00f};
 const float chargePercentages[] = {
-    0.00f, 0.05f, 0.11f, 0.16f, 0.21f, 0.26f, 0.32f, 0.37f, 0.42f, 0.47f, 0.53f, 0.58f, 0.63f, 0.68f, 0.74f, 0.79f, 0.84f, 0.89f, 0.95f, 1.00f
-};
+    0.00f, 0.05f, 0.11f, 0.16f, 0.21f, 0.26f, 0.32f, 0.37f, 0.42f, 0.47f, 0.53f, 0.58f, 0.63f, 0.68f, 0.74f, 0.79f, 0.84f, 0.89f, 0.95f, 1.00f};
 const int numberOfVoltageValues = 20;
-
 
 /// @brief Permet de calculer le pourcentage de batterie restante basé sur un ensemble de mesures de la tension de la batterie.
 /// @return L'estimation du pourcentage de batterie restante.
@@ -189,7 +186,7 @@ const unsigned int Battery::getCapacity()
 }
 
 /// @brief Méthode permettant de récupérer la composante heure de l'estimation de l'autonomie restante.
-/// @return 
+/// @return
 const unsigned int Battery::getRemainingAutonomyHours()
 {
     float autonomyInHours = (m_capacity / m_current) * this->getPercentage();
